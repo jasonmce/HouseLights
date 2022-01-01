@@ -1,20 +1,21 @@
 
+
 #include <Adafruit_NeoPixel.h>
 #ifdef __AVR_ATtiny85__ // Trinket, Gemma, etc.
 #include <avr/power.h>
 #endif
 
 #include "cycle_sprite.h"
-#include "twinkle.h"
 #include "patterns.h"
+#include "twinkle.h"
 
 // There are 11 lights on the strip connected to pin 2.
 #define STRING_LENGTH 200
-#define NUM_TWINKLERS 9
+#define NUM_TWINKLERS STRING_LENGTH/ 10
 
 
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(STRING_LENGTH, 2, NEO_RGB + NEO_KHZ800);
- 
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(STRING_LENGTH, 2, NEO_RGB + NEO_KHZ400);
+
 uint32_t WHITE = strip.Color(255, 255, 255);
 uint32_t BLACK = strip.Color(0, 0, 0);
 uint32_t RED = strip.Color(255, 0, 0);
@@ -24,12 +25,18 @@ uint32_t PURPLE = strip.Color(255, 0, 255);
 uint32_t ROSE = strip.Color(255, 150, 150); // Can't say "pink"
 uint32_t YELLOW = strip.Color(219, 255, 51);
 
-uint32_t color_palette[] = {RED, GREEN, PURPLE, YELLOW, ROSE, BLUE};
+uint32_t color_palette[] = {WHITE, RED, GREEN, BLUE};
+//uint32_t color_palette[] = {
+//  strip.Color(199,73,242), 
+//  strip.Color(242, 194, 85), 
+//  strip.Color(97,61,242), 
+//  strip.Color(175,242,36),
+//  strip.Color(48, 113,242)
+//};
 
 
 
 CycleSprite *sprites[NUM_TWINKLERS] = { 0 };
-int sprite_steps = 20;
 
 
 void setup() {
@@ -38,37 +45,117 @@ void setup() {
   strip.begin();
   delay(500);
  
-  multicolorFillWithSpacing(strip, color_palette, 4, 1);
+//  Patterns::WithSpacing(strip, color_palette, sizeof(color_palette) / sizeof(uint32_t), 1);
+    WithSpacing(color_palette, sizeof(color_palette) / sizeof(uint32_t), 1);
+//  setup_sprites();
+}
 
-  int address, start_step;
-  
-  for (int sprite_index = 0; sprite_index < NUM_TWINKLERS; sprite_index++) {
-    address = random(0, STRING_LENGTH / 2) * 2 + 1;
-    Serial.println("Address is " + String(address));
-    
-    start_step = sprite_index % (sprite_steps * 2);
-    sprites[sprite_index] = new CycleSprite(&strip, address, WHITE, sprite_steps);
-  }    
+//
+//void setup_sprites() {
+//  Serial.println("setup_sprites");
+//
+//  int sprite_steps = 10;
+//
+//  for (int sprite_index = 0; sprite_index < NUM_TWINKLERS; sprite_index++) {
+//    uint16_t address = (uint16_t)(random(0, STRING_LENGTH / 2) * 2 + 1);  
+//    sprites[sprite_index] = new CycleSprite(&strip, address, WHITE, sprite_steps);
+//    sprites[sprite_index]->setStep(sprite_index % (sprite_steps * 2));
+//  }     
+//}
+
+//void loop_sprites() {
+////  Serial.println("loop_sprites");  
+//  uint16_t address = 0;
+//  for (int sprite_index = 0; sprite_index < NUM_TWINKLERS; sprite_index++) {
+//    sprites[sprite_index]->cycle(&strip);
+//    if (sprites[sprite_index]->finished()) {
+//      address = (uint16_t)(random(0, STRING_LENGTH / 2) * 2 + 1);
+//      Serial.print("Sprite address recycled ");
+//      Serial.print(sprite_index);
+//      Serial.print(" to address ");
+//      Serial.print(address);      
+//      sprites[sprite_index]->setStep(0);
+//      sprites[sprite_index]->setAddress(&strip, (uint16_t)address);
+//    } else {
+//      strip.setPixelColor((uint16_t)address, sprites[sprite_index]->use_color);
+//    }
+//  }
+//  strip.show();  
+//}
+
+
+void loop() {
+  Serial.println("loop");
+
+  delay(500);
+  toggleTwinkles(&strip);
+//  loop_sprites();
+
+
+
 }
 
 
-//      delete sprites[sprite_index];
-//      sprites[sprite_index] = new CycleSprite(&strip, address, WHITE, sprite_steps);
 
-void loop() {
-  int address = 0;
+// Back to basics: alternating through list of colors provided.
+// Could this be done with Rainbow() and a lot of loops (length / 4)?
+void WithSpacing(uint32_t colors[], int num_colors, int spacing) {
+  int string_length = strip.numPixels();
 
-  for (int sprite_index = 0; sprite_index < NUM_TWINKLERS; sprite_index++) {
-    if (sprites[sprite_index]->finished()) {
-      Serial.println("Recycling " + String(sprite_index));
-      address = random(0, STRING_LENGTH / 2) * 2 + 1;
-      sprites[sprite_index]->recycle(address, WHITE);
-    } else {
-      Serial.println("cycling " + String(sprite_index));
-      
-      sprites[sprite_index]->cycle();
+  // Turn off the strip.
+  strip.fill(strip.Color(0, 0, 0), 0, 0);
+
+  // Iterate through the rest and spread them out.
+  for (int color_index = 0; color_index < num_colors; color_index++) {
+    for(int address = color_index; address < string_length; address += (num_colors * (spacing + 1))) {
+      strip.setPixelColor(address + color_index, colors[color_index]);
     }
   }
+
   strip.show();
-  delay(25);
+}
+
+
+// Safely and wastefully large.
+int twinkle[2][50];
+// twinkle_step = -1 is the "initialize" value.
+int twinkle_step = -1;
+
+/**
+ * Randomly picks 5% of the strip to blink on and off.
+ * 
+ * Assumes odd lights are available to twinkle.
+ */
+void toggleTwinkles(Adafruit_NeoPixel *my_strip) {
+  int half_string_length = my_strip->numPixels() / 2;
+  uint32_t color_white = my_strip->Color(255, 255, 255);
+  uint32_t color_black = my_strip->Color(0, 0, 0);
+
+
+  if (-1 == twinkle_step) {
+    Serial.println("toggleTwinkles - pre-init");
+    for (int count = 0; count < (half_string_length * 0.5); count++) {
+      twinkle[1][count] = random(0, half_string_length) * 2 + 1;
+      my_strip->setPixelColor(twinkle[1][count], color_white);
+      twinkle[0][count] = random(0, half_string_length) * 2 + 1;
+      my_strip->setPixelColor(twinkle[0][count], color_white);
+    }
+    twinkle_step = 0;
+    return;
+  }
+  Serial.print("toggleTwinkles - Set ");
+  Serial.println(twinkle_step);
+
+  Serial.print("Turning on ");
+  
+  for (int count = 0; count < (half_string_length * 0.5); count++) {
+    my_strip->setPixelColor(twinkle[twinkle_step][count], color_black);
+    twinkle[twinkle_step][count] = random(0, half_string_length) * 2 + 1;
+    my_strip->setPixelColor(twinkle[twinkle_step][count], color_white);
+    Serial.print(twinkle[twinkle_step][count]);
+    Serial.print(" ");
+  }
+  Serial.println("done ");
+  twinkle_step = (twinkle_step + 1) % 2;
+  my_strip->show();
 }
