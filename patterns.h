@@ -10,8 +10,8 @@
 class Patterns {
 
   public:
-    static void simplePattern(Adafruit_NeoPixel strip, uint32_t colors[], int num_colors);
-    static void WithSpacing(Adafruit_NeoPixel strip, uint32_t colors[], int num_colors, int spacing);
+    static void simplePattern(Adafruit_NeoPixel *light_strip, uint32_t colors[], int num_colors);
+    static void WithSpacing(Adafruit_NeoPixel *light_strip, uint32_t colors[], int num_colors, int spacing);
 };
 
 #endif // ifndef Patterns_h

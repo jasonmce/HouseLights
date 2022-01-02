@@ -45,8 +45,7 @@ void setup() {
   strip.begin();
   delay(500);
  
-//  Patterns::WithSpacing(strip, color_palette, sizeof(color_palette) / sizeof(uint32_t), 1);
-    WithSpacing(color_palette, sizeof(color_palette) / sizeof(uint32_t), 1);
+  Patterns::WithSpacing(&strip, color_palette, sizeof(color_palette) / sizeof(uint32_t), 1);
 //  setup_sprites();
 }
 
@@ -91,26 +90,4 @@ void loop() {
   toggleTwinkles(&strip);
 //  loop_sprites();
 
-
-
-}
-
-
-
-// Back to basics: alternating through list of colors provided.
-// Could this be done with Rainbow() and a lot of loops (length / 4)?
-void WithSpacing(uint32_t colors[], int num_colors, int spacing) {
-  int string_length = strip.numPixels();
-
-  // Turn off the strip.
-  strip.fill(strip.Color(0, 0, 0), 0, 0);
-
-  // Iterate through the rest and spread them out.
-  for (int color_index = 0; color_index < num_colors; color_index++) {
-    for(int address = color_index; address < string_length; address += (num_colors * (spacing + 1))) {
-      strip.setPixelColor(address + color_index, colors[color_index]);
-    }
-  }
-
-  strip.show();
 }
