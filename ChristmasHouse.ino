@@ -1,5 +1,3 @@
-
-
 #include <Adafruit_NeoPixel.h>
 #ifdef __AVR_ATtiny85__ // Trinket, Gemma, etc.
 #include <avr/power.h>
@@ -9,10 +7,10 @@
 #include "patterns.h"
 #include "twinkle.h"
 
-// There are 11 lights on the strip connected to pin 2.
 #define STRING_LENGTH 200
 #define NUM_TWINKLERS STRING_LENGTH/ 10
 
+CycleSprite *sprites[NUM_TWINKLERS] = { 0 };
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(STRING_LENGTH, 2, NEO_RGB + NEO_KHZ400);
 
@@ -38,11 +36,9 @@ uint32_t color_palette[] = {RED, ORANGE, YELLOW, GREEN, BLUE, INDIGO, PURPLE, };
 //  strip.Color(48, 113,242)
 //};
 
-
-
-CycleSprite *sprites[NUM_TWINKLERS] = { 0 };
-
-
+/**
+ * All pre-loop operations and setup.
+ */
 void setup() {
   Serial.begin(115200);
   
@@ -50,10 +46,21 @@ void setup() {
   delay(500);
  
   Patterns::WithSpacing(&strip, color_palette, sizeof(color_palette) / sizeof(uint32_t), 1);
-//  setup_sprites();
 }
 
+/**
+ * Working code loop.
+ */
+void loop() {
+  Serial.println("loop");
 
+  delay(500);
+  toggleTwinkles(&strip, 10);
+}
+
+/**
+ * Set up sprites for looping.
+ */
 void setup_sprites() {
   Serial.println("setup_sprites");
 
@@ -66,6 +73,9 @@ void setup_sprites() {
   }     
 }
 
+/**
+ * Sprite loop function.
+ */
 void loop_sprites() {
 //  Serial.println("loop_sprites");  
   uint16_t address = 0;
@@ -79,14 +89,4 @@ void loop_sprites() {
       strip.setPixelColor((uint16_t)address, sprites[sprite_index]->use_color);
     }
   }
-}
-
-
-void loop() {
-  Serial.println("loop");
-
-  delay(500);
-  toggleTwinkles(&strip, 10);
-//  loop_sprites();
-
 }
