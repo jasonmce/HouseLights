@@ -15,10 +15,10 @@ class CycleSprite {
     unsigned int total_steps;
     unsigned int current_step;
 
-    uint8_t CycleSprite::getStepColorByteShift(float percent, int byte_shift);
-    uint8_t CycleSprite::redStep(float percent);
-    uint8_t CycleSprite::greenStep(float percent);
-    uint8_t CycleSprite::blueStep(float percent);
+    uint8_t getStepColorByteShift(float percent, int byte_shift);
+    uint8_t redStep(float percent);
+    uint8_t greenStep(float percent);
+    uint8_t blueStep(float percent);
       
   public:
     CycleSprite(Adafruit_NeoPixel *parent_strip, unsigned address, uint32_t color, int steps);

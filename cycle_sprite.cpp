@@ -3,20 +3,13 @@
 #include "cycle_sprite.h"
 
 CycleSprite::CycleSprite(Adafruit_NeoPixel *parent_strip, unsigned int index, uint32_t color, int num_steps) {
-//  Serial.print(" Using address ");
-//  Serial.println(index);      
-  
   address = index;
   // Number of steps to take from start to target colors.
   steps = num_steps;
   // Total number of steps in a cycle is twice one direction.
   total_steps = steps * 2;
-  int steps = num_steps;
   current_step = 0;
   strip = parent_strip;
-//  Serial.print(" Has address ");
-//  Serial.println(address);      
-  
 }
 
 // Later use color stuff from https://community.particle.io/t/extracting-rgb-color-value/30170
@@ -66,8 +59,7 @@ void CycleSprite::cycle(Adafruit_NeoPixel *my_strip) {
     return NULL;
   }
 
-
-  float percent_changed = (float)(abs(steps - current_step)) / (float)steps;
+  float percent_changed = (float)abs((int)(steps - current_step)) / (float)steps;
   Serial.println(percent_changed);
 
   current_step++;
