@@ -2,13 +2,13 @@
 
 #include "cycle_sprite.h"
 
-CycleSprite::CycleSprite(int index, int num_steps, int red, int green, int blue) {
+CycleSprite::CycleSprite(int index, int num_steps, int red, int green, int blue, int start_step = 0) {
   address = index;
 
   steps = num_steps;
-    // Total number of steps in a cycle is twice one direction.
+  current_step = start_step;
+  // Total number of steps in a cycle is twice one direction.
   total_steps = steps * 2;
-  current_step = 0;
 
   red_target = red;
   green_target = green;
@@ -16,15 +16,8 @@ CycleSprite::CycleSprite(int index, int num_steps, int red, int green, int blue)
 }
 
 void CycleSprite::cycle(Adafruit_NeoPixel *my_strip) {
-  if ((address > 200) || (address < 0)) {
-    Serial.print("WTF-PRE!!! Sprite address ");
-    Serial.println(address);
-    return NULL;
-  }
   if (current_step > total_steps) {
-    Serial.print("Sprite address ");
-    Serial.print(address);
-    Serial.println(" is done, no more cycling");
+    Serial.print("Sprite address " + String(address) + " is done, no more cycling");
     return NULL;
   }
 
@@ -34,12 +27,12 @@ void CycleSprite::cycle(Adafruit_NeoPixel *my_strip) {
   int green_step = (green_target * percent_changed) / 100;
   int blue_step = (blue_target * percent_changed) / 100;
 
-  char buffer[100];
-  sprintf(buffer, "step is %d, r=%d, g=%d, b=%d", current_step, red_step, green_step, blue_step);
-  Serial.println(buffer);
+//  char buffer[100];
+//  sprintf(buffer, "step is %d, r=%d, g=%d, b=%d", current_step, red_step, green_step, blue_step);
+//  Serial.println(buffer);
 
   current_step++;
-  my_strip->setPixelColor(address, red_step, green_step, blue_step);
+  my_strip->setPixelColor(address, red_step / 2, green_step / 2, blue_step / 2);
 }
 
 bool CycleSprite::finished() {

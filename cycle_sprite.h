@@ -20,7 +20,7 @@ class CycleSprite {
 
       
   public:
-    CycleSprite(int index, int num_steps, int red, int green, int blue);
+    CycleSprite(int index, int num_steps, int red, int green, int blue, int start_step = 0);
 
     void setStep(int new_step) { current_step = new_step; }
     void setAddress(Adafruit_NeoPixel *parent_strip, unsigned new_address) {

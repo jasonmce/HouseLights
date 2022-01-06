@@ -53,9 +53,9 @@ void setup() {
  * Working code loop.
  */
 void loop() {
-  Serial.println("loop");
+//  Serial.println("loop");
 
-  delay(100);
+  delay(50);
   // toggleTwinkles(&strip, 20);
   loop_sprites();
   strip.show();
@@ -67,12 +67,12 @@ void loop() {
 void setup_sprites() {
   Serial.println("setup_sprites");
 
-  int sprite_steps = 50;
+  int sprite_steps = 25;
 
   for (int sprite_index = 0; sprite_index < NUM_TWINKLERS; sprite_index++) {
     int address = (random(0, STRING_LENGTH / 2) * 2) + 1;  
-    sprites[sprite_index] = new CycleSprite(address, sprite_steps, 255, 255, 255);
-    sprites[sprite_index]->setStep(random(0, (sprite_steps * 2) - 1));
+    int start_step = random(0, (sprite_steps * 2) - 1);
+    sprites[sprite_index] = new CycleSprite(address, sprite_steps, 255, 255, 255, start_step);
   }     
 }
 
@@ -89,8 +89,6 @@ void loop_sprites() {
       sprites[sprite_index]->setStep(0);
       sprites[sprite_index]->setAddress(&strip, address);
       Serial.println("recycling index " + String(sprite_index) + " to address " + String(address));  
-    } else {
-      strip.setPixelColor(address, 0, 0, 0);
     }
   }
 }
