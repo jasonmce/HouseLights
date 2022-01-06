@@ -53,8 +53,6 @@ void setup() {
  * Working code loop.
  */
 void loop() {
-//  Serial.println("loop");
-
   delay(50);
   // toggleTwinkles(&strip, 20);
   loop_sprites();
@@ -62,17 +60,28 @@ void loop() {
 }
 
 /**
- * Set up sprites for looping.
+ * Set up sprites for looping, alternating red, blue, and green colors.
  */
 void setup_sprites() {
+  int address, start_step, red, green, blue;
+  
   Serial.println("setup_sprites");
 
   int sprite_steps = 25;
-
+  
   for (int sprite_index = 0; sprite_index < NUM_TWINKLERS; sprite_index++) {
     int address = (random(0, STRING_LENGTH / 2) * 2) + 1;  
     int start_step = random(0, (sprite_steps * 2) - 1);
-    sprites[sprite_index] = new CycleSprite(address, sprite_steps, 255, 255, 255, start_step);
+
+    switch (sprite_index % 3) {
+      case 0: red = 255; green = 0; blue = 0; break;
+      case 1: red = 0; green = 255; blue = 0; break;
+      case 2: red = 0; green = 0; blue = 255; break;
+      default:
+        Serial.println("Wtf sprite index mod 3 is for " + String(sprite_index));
+    }
+
+    sprites[sprite_index] = new CycleSprite(address, sprite_steps, red, green, blue, start_step);
   }     
 }
 
