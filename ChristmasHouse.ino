@@ -44,8 +44,9 @@ void setup() {
   
   strip.begin();
   delay(500);
- 
-  Patterns::WithSpacing(&strip, color_palette, sizeof(color_palette) / sizeof(uint32_t), 1);
+  strip.fill(BLACK);
+//  Patterns::WithSpacing(&strip, color_palette, sizeof(color_palette) / sizeof(uint32_t), 1);
+  setup_sprites();
 }
 
 /**
@@ -54,8 +55,10 @@ void setup() {
 void loop() {
   Serial.println("loop");
 
-  delay(500);
-  toggleTwinkles(&strip, 10);
+  delay(100);
+  // toggleTwinkles(&strip, 20);
+  loop_sprites();
+  strip.show();
 }
 
 /**
@@ -64,12 +67,12 @@ void loop() {
 void setup_sprites() {
   Serial.println("setup_sprites");
 
-  int sprite_steps = 10;
+  int sprite_steps = 50;
 
   for (int sprite_index = 0; sprite_index < NUM_TWINKLERS; sprite_index++) {
-    uint16_t address = (uint16_t)(random(0, STRING_LENGTH / 2) * 2 + 1);  
-    sprites[sprite_index] = new CycleSprite(&strip, address, WHITE, sprite_steps);
-    sprites[sprite_index]->setStep(sprite_index % (sprite_steps * 2));
+    int address = (random(0, STRING_LENGTH / 2) * 2) + 1;  
+    sprites[sprite_index] = new CycleSprite(address, sprite_steps, 255, 255, 255);
+    sprites[sprite_index]->setStep(random(0, (sprite_steps * 2) - 1));
   }     
 }
 
@@ -78,15 +81,16 @@ void setup_sprites() {
  */
 void loop_sprites() {
 //  Serial.println("loop_sprites");  
-  uint16_t address = 0;
+  int address = 0;
   for (int sprite_index = 0; sprite_index < NUM_TWINKLERS; sprite_index++) {
     sprites[sprite_index]->cycle(&strip);
     if (sprites[sprite_index]->finished()) {
-      address = (uint16_t)(random(0, STRING_LENGTH / 2) * 2 + 1);
+      address = (random(0, STRING_LENGTH / 2) * 2) + 1;
       sprites[sprite_index]->setStep(0);
-      sprites[sprite_index]->setAddress(&strip, (uint16_t)address);
+      sprites[sprite_index]->setAddress(&strip, address);
+      Serial.println("recycling index " + String(sprite_index) + " to address " + String(address));  
     } else {
-      strip.setPixelColor((uint16_t)address, sprites[sprite_index]->use_color);
+      strip.setPixelColor(address, 0, 0, 0);
     }
   }
 }

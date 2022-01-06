@@ -2,48 +2,17 @@
 
 #include "cycle_sprite.h"
 
-CycleSprite::CycleSprite(Adafruit_NeoPixel *parent_strip, unsigned int index, uint32_t color, int num_steps) {
+CycleSprite::CycleSprite(int index, int num_steps, int red, int green, int blue) {
   address = index;
-  // Number of steps to take from start to target colors.
+
   steps = num_steps;
-  // Total number of steps in a cycle is twice one direction.
+    // Total number of steps in a cycle is twice one direction.
   total_steps = steps * 2;
   current_step = 0;
-  strip = parent_strip;
-}
 
-// Later use color stuff from https://community.particle.io/t/extracting-rgb-color-value/30170
-
-
-uint8_t CycleSprite::getRedFromColor(uint32_t c) {
-    return c >> 16;
-}
-
-uint8_t CycleSprite::getGreenFromColor(uint32_t c) {
-    return c >> 8;
-}
-
-uint8_t CycleSprite::getBlueFromColor(uint32_t c) {
-    return c;
-}
-
-uint8_t CycleSprite::getStepColorByteShift(float percent, int byte_shift) {
-  return (uint8_t)(255 * percent);
-}
-
-uint8_t CycleSprite::redStep(float percent){
-  return this->getStepColorByteShift(percent, 16);
-}
-uint8_t CycleSprite::greenStep(float percent){
-  return this->getStepColorByteShift(percent, 8);
-}
-uint8_t CycleSprite::blueStep(float percent){
-  return this->getStepColorByteShift(percent, 0);
-}
-
-
-uint32_t CycleSprite::getStepColor(Adafruit_NeoPixel *my_strip, float step_percent) {
-  return 1;
+  red_target = red;
+  green_target = green;
+  blue_target = blue;
 }
 
 void CycleSprite::cycle(Adafruit_NeoPixel *my_strip) {
@@ -59,14 +28,18 @@ void CycleSprite::cycle(Adafruit_NeoPixel *my_strip) {
     return NULL;
   }
 
-  float percent_changed = (float)abs((int)(steps - current_step)) / (float)steps;
-  Serial.println(percent_changed);
+  int percent_changed =  (100 * (steps - abs(steps - current_step))) / steps;
+
+  int red_step = (red_target * percent_changed) / 100;
+  int green_step = (green_target * percent_changed) / 100;
+  int blue_step = (blue_target * percent_changed) / 100;
+
+  char buffer[100];
+  sprintf(buffer, "step is %d, r=%d, g=%d, b=%d", current_step, red_step, green_step, blue_step);
+  Serial.println(buffer);
 
   current_step++;
-  use_color = this->getStepColor(my_strip, percent_changed);
-
-
-//  my_strip->setPixelColor(address, red_step, green_step, blue_step);
+  my_strip->setPixelColor(address, red_step, green_step, blue_step);
 }
 
 bool CycleSprite::finished() {

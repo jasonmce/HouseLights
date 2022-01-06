@@ -8,32 +8,25 @@
  */
 class CycleSprite {
   protected:
-    Adafruit_NeoPixel *strip;
-    unsigned int address;
+    int address;
 
-    unsigned int steps;
-    unsigned int total_steps;
-    unsigned int current_step;
+    int steps;
+    int total_steps;
+    int current_step;
 
-    uint8_t getStepColorByteShift(float percent, int byte_shift);
-    uint8_t redStep(float percent);
-    uint8_t greenStep(float percent);
-    uint8_t blueStep(float percent);
+    uint8_t red_target;
+    uint8_t green_target;
+    uint8_t blue_target;
+
       
   public:
-    CycleSprite(Adafruit_NeoPixel *parent_strip, unsigned address, uint32_t color, int steps);
-
-    uint32_t use_color;
+    CycleSprite(int index, int num_steps, int red, int green, int blue);
 
     void setStep(int new_step) { current_step = new_step; }
     void setAddress(Adafruit_NeoPixel *parent_strip, unsigned new_address) {
       parent_strip->setPixelColor(address, 0, 0, 0);
       address = new_address;
       }
-    uint8_t getRedFromColor(uint32_t c);
-    uint8_t getGreenFromColor(uint32_t c);
-    uint8_t getBlueFromColor(uint32_t c);
-    uint32_t getStepColor(Adafruit_NeoPixel *my_strip, float step_percent);
     void cycle(Adafruit_NeoPixel *my_strip);
     bool finished();
 
