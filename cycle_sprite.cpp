@@ -16,6 +16,10 @@ CycleSprite::CycleSprite(int index, int num_steps, int red, int green, int blue,
 }
 
 void CycleSprite::cycle(Adafruit_NeoPixel *my_strip) {
+  if ((200 < address) || (address < 0))  {
+    Serial.print("Just broke with address " + String(address));
+    return NULL;
+  }  
   if (current_step > total_steps) {
     Serial.print("Sprite address " + String(address) + " is done, no more cycling");
     return NULL;
@@ -36,5 +40,9 @@ void CycleSprite::cycle(Adafruit_NeoPixel *my_strip) {
 }
 
 bool CycleSprite::finished() {
+  if ((200 < address) || (address < 0))  {
+    Serial.print("Just broke with address " + String(address));
+    return NULL;
+  }  
   return (current_step >= total_steps);
 }
