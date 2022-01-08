@@ -15,6 +15,27 @@ CycleSprite::CycleSprite(int index, int num_steps, int red, int green, int blue,
   blue_target = blue;
 }
 
+CycleSprite::CycleSprite(int index, int num_steps, uint8_t *color, int start_step = 0) {
+  address = index;
+
+  steps = num_steps;
+  current_step = start_step;
+  // Total number of steps in a cycle is twice one direction.
+  total_steps = steps * 2;
+
+
+    char buffer[100];
+    sprintf(buffer, "step %d, r=%d g=%d b=%d", 0, 
+      color[0], color[1], color[2]);
+    Serial.println(buffer);
+
+
+  red_target = color[0];
+  green_target = color[1];
+  blue_target = color[2];
+}
+
+
 void CycleSprite::cycle(Adafruit_NeoPixel *my_strip) {
   if ((200 < address) || (address < 0))  {
     Serial.print("Just broke with address " + String(address));

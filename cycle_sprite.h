@@ -18,9 +18,9 @@ class CycleSprite {
     uint8_t green_target;
     uint8_t blue_target;
 
-      
   public:
     CycleSprite(int index, int num_steps, int red, int green, int blue, int start_step = 0);
+    CycleSprite(int index, int num_steps, uint8_t *color, int start_step = 0);
 
     void setStep(int new_step) { current_step = new_step; }
     void setAddress(Adafruit_NeoPixel *parent_strip, unsigned new_address) {
@@ -37,7 +37,20 @@ class CycleSprite {
       Serial.println(buffer);
     };
 
-      
+  protected:
+    // These are from adafruit's neopixel library.
+    uint32_t color(uint8_t r, uint8_t g, uint8_t b) {
+      return ((uint32_t)r << 16) | ((uint32_t)g <<  8) | b;
+    }
+    char * color_array(uint32_t c) {
+      uint8_t 
+        r = (uint8_t)(c >> 16),
+        g = (uint8_t)(c >>  8),
+        b = (uint8_t)c;
+        char colors[] = {r,g,b};
+      return colors;
+    }
+
 };
 
 #endif

@@ -8,7 +8,7 @@
 #include "twinkle.h"
 
 #define STRING_LENGTH 200
-#define NUM_TWINKLERS STRING_LENGTH/ 10
+#define NUM_TWINKLERS STRING_LENGTH/ 2
 
 CycleSprite *sprites[NUM_TWINKLERS] = { 0 };
 
@@ -25,7 +25,20 @@ uint32_t INDIGO = strip.Color(128, 0, 255);
 uint32_t PURPLE = strip.Color(255, 0, 255);
 uint32_t ROSE = strip.Color(255, 150, 150); // Can't say "pink"
 
-uint32_t color_palette[] = {RED, ORANGE, YELLOW, GREEN, BLUE, INDIGO, PURPLE, };
+uint8_t white[] = {255, 255, 255};
+uint8_t black[] = {0, 0, 0};
+uint8_t red[] = {255, 0, 0};
+uint8_t orange[] = {255, 128, 0};
+uint8_t yellow[] = {219, 255, 51};
+uint8_t green[] = {0, 255, 0};
+uint8_t blue[] = {0, 0, 255};
+uint8_t indigo[] = {128, 0, 255};
+uint8_t purple[] = {255, 0, 255};
+uint8_t rose[] = {255, 150, 150}; // Can't say "pink"
+
+
+
+uint32_t color_palette[] = {RED, ORANGE, YELLOW, GREEN, BLUE, INDIGO, PURPLE};
 
 //uint32_t color_palette[] = {WHITE, RED, GREEN, BLUE};
 //uint32_t color_palette[] = {
@@ -44,15 +57,18 @@ void setup() {
   
   strip.begin();
   delay(500);
+ 
   strip.fill(BLACK);
 //  Patterns::WithSpacing(&strip, color_palette, sizeof(color_palette) / sizeof(uint32_t), 1);
-  setup_sprites();
+    
+  uint8_t *colors[] = {red, orange, yellow, green, blue, indigo, purple};
+  setup_sprites(colors, 7);
 }
 
 /**
  * Working code loop.
  */
-void loop() {
+void loop() { 
   delay(50);
   // toggleTwinkles(&strip, 20);
   loop_sprites();
@@ -60,28 +76,20 @@ void loop() {
 }
 
 /**
- * Set up sprites for looping, alternating red, blue, and green colors.
+ * Set up sprites for looping, alternating colors from an array.
  */
-void setup_sprites() {
-  int address, start_step, red, green, blue;
-  
-  Serial.println("setup_sprites");
-
+void setup_sprites(uint8_t *colors[], int num_colors) {
+  int address, start_step, color_step;
   int sprite_steps = 25;
-  
+
+  Serial.println("setup_sprites");
+ 
   for (int sprite_index = 0; sprite_index < NUM_TWINKLERS; sprite_index++) {
-    int address = (random(0, STRING_LENGTH / 2) * 2) + 1;  
-    int start_step = random(0, (sprite_steps * 2) - 1);
+    address = (random(0, STRING_LENGTH / 2) * 2) + 1;  
+    start_step = random(0, (sprite_steps * 2) - 1);
 
-    switch (sprite_index % 3) {
-      case 0: red = 255; green = 0; blue = 0; break;
-      case 1: red = 0; green = 255; blue = 0; break;
-      case 2: red = 0; green = 0; blue = 255; break;
-      default:
-        Serial.println("Wtf sprite index mod 3 is for " + String(sprite_index));
-    }
-
-    sprites[sprite_index] = new CycleSprite(address, sprite_steps, red, green, blue, start_step);
+    color_step = (sprite_index % num_colors);
+    sprites[sprite_index] = new CycleSprite(address, sprite_steps, colors[color_step], start_step);
   }     
 }
 
