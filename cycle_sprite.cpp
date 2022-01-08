@@ -23,12 +23,10 @@ CycleSprite::CycleSprite(int index, int num_steps, uint8_t *color, int start_ste
   // Total number of steps in a cycle is twice one direction.
   total_steps = steps * 2;
 
-
-    char buffer[100];
-    sprintf(buffer, "step %d, r=%d g=%d b=%d", 0, 
-      color[0], color[1], color[2]);
-    Serial.println(buffer);
-
+//  char buffer[100];
+//  sprintf(buffer, "step %d, r=%d g=%d b=%d", 0, 
+//    color[0], color[1], color[2]);
+//  Serial.println(buffer);
 
   red_target = color[0];
   green_target = color[1];
