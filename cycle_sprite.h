@@ -8,8 +8,6 @@
  */
 class CycleSprite {
   protected:
-    int address;
-
     int steps;
     int total_steps;
     int current_step;
@@ -19,12 +17,15 @@ class CycleSprite {
     uint8_t blue_target;
 
   public:
+    int address;
+
+    void setMainValues(int index, int num_steps, int start_step);
+
     CycleSprite(int index, int num_steps, int red, int green, int blue, int start_step = 0);
     CycleSprite(int index, int num_steps, uint8_t *color, int start_step = 0);
 
     void setStep(int new_step) { current_step = new_step; }
-    void setAddress(Adafruit_NeoPixel *parent_strip, unsigned new_address) {
-      parent_strip->setPixelColor(address, 0, 0, 0);
+    void setAddress(unsigned new_address) {
       address = new_address;
       }
     void cycle(Adafruit_NeoPixel *my_strip);

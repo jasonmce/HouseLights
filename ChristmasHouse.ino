@@ -1,29 +1,38 @@
+/**
+ * HouseLights application
+ * 
+ * Signal pin: Mega = 2, NodeMCU = D4
+ */
+
 #include <Adafruit_NeoPixel.h>
 #ifdef __AVR_ATtiny85__ // Trinket, Gemma, etc.
 #include <avr/power.h>
 #endif
 
 #include "cycle_sprite.h"
+#include "cycle_string.h"
 #include "patterns.h"
 #include "twinkle.h"
+#include "global.h"
+#include "color_parade.h"
 
-#define STRING_LENGTH 200
-#define NUM_TWINKLERS STRING_LENGTH/ 2
 
 CycleSprite *sprites[NUM_TWINKLERS] = { 0 };
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(STRING_LENGTH, 2, NEO_RGB + NEO_KHZ400);
 
-uint32_t WHITE = strip.Color(255, 255, 255);
 uint32_t BLACK = strip.Color(0, 0, 0);
+uint32_t WHITE = strip.Color(255, 255, 255);
 uint32_t RED = strip.Color(255, 0, 0);
-uint32_t ORANGE = strip.Color(255, 128, 0);
-uint32_t YELLOW = strip.Color(219, 255, 51);
 uint32_t GREEN = strip.Color(0, 255, 0);
 uint32_t BLUE = strip.Color(0, 0, 255);
-uint32_t INDIGO = strip.Color(128, 0, 255);
-uint32_t PURPLE = strip.Color(255, 0, 255);
-uint32_t ROSE = strip.Color(255, 150, 150); // Can't say "pink"
+
+uint32_t WHITEISH = strip.Color(128, 128, 128);
+uint32_t REDISH = strip.Color(128, 0, 0);
+uint32_t GREENISH = strip.Color(0, 128, 0);
+uint32_t BLUEISH = strip.Color(0, 0, 128);
+
+
 
 uint8_t white[] = {255, 255, 255};
 uint8_t black[] = {0, 0, 0};
@@ -37,9 +46,6 @@ uint8_t purple[] = {255, 0, 255};
 uint8_t rose[] = {255, 150, 150}; // Can't say "pink"
 
 
-
-uint32_t color_palette[] = {RED, ORANGE, YELLOW, GREEN, BLUE, INDIGO, PURPLE};
-
 //uint32_t color_palette[] = {WHITE, RED, GREEN, BLUE};
 //uint32_t color_palette[] = {
 //  strip.Color(255, 0, 255), 
@@ -49,6 +55,55 @@ uint32_t color_palette[] = {RED, ORANGE, YELLOW, GREEN, BLUE, INDIGO, PURPLE};
 //  strip.Color(48, 113,242)
 //};
 
+CycleString *cycleString = NULL;
+
+uint32_t test_colors[4] = {REDISH, WHITEISH, GREENISH, BLUEISH};
+ColorParade *colorParade = new ColorParade(test_colors, 4, 6, 100);
+EffectBase *something = NULL;
+
+// untested
+void setup_spaced_rainbow_with_twinkles_using_sprites() {
+  uint32_t color_palette[4] = {RED, WHITE, GREEN, BLUE};
+  Patterns::WithSpacing(&strip, color_palette, sizeof(color_palette) / sizeof(uint32_t), 1);
+  uint8_t *colors[] = {blue, indigo, purple, red, green, rose};
+  setup_sprites(colors, 6);  
+}
+void loop_spaced_rainbow_with_twinkles_using_sprites() {
+  loop_sprites();
+  strip.show();
+}
+
+// untested
+void setup_white_with_twinkles_using_sprites() {
+  strip.fill(WHITE);
+  uint8_t *colors[] = {red, orange, yellow, green, blue, indigo, purple};
+  setup_sprites(colors, 7);
+}
+void loop_white_with_twinkles_using_sprites() {
+  loop_sprites();
+  strip.show();
+}
+
+// untested
+void setup_white_with_cycleString_sprites() {
+  strip.fill(WHITE);
+  uint8_t *colors[] = {red, orange, yellow, green, blue, indigo, purple};
+  cycleString = new CycleString(100);
+  cycleString->setupSprites(colors, 7);
+}
+void loop_white_with_cycleString_sprites() {
+  cycleString->loopSprites(strip);
+  strip.show();
+}
+
+
+void setup_color_parade() {
+  something->setup(&strip);
+}
+void loop_color_parade() {
+  something->loop(&strip);
+}
+
 /**
  * All pre-loop operations and setup.
  */
@@ -57,21 +112,24 @@ void setup() {
   
   strip.begin();
   delay(500);
- 
-  strip.fill(BLACK);
-//  Patterns::WithSpacing(&strip, color_palette, sizeof(color_palette) / sizeof(uint32_t), 1);
-    
-  uint8_t *colors[] = {red, orange, yellow, green, blue, indigo, purple};
-  setup_sprites(colors, 7);
+
+  something = colorParade;
+
+  setup_color_parade();
+  strip.show();
 }
 
 /**
  * Working code loop.
  */
-void loop() { 
-  delay(50);
+void loop() {
+  delay(500);
+
+  loop_color_parade();
+
   // toggleTwinkles(&strip, 20);
-  loop_sprites();
+  //  loop_sprites();
+  //cycleString->loopSprites(&strip);
   strip.show();
 }
 
@@ -87,6 +145,7 @@ void setup_sprites(uint8_t *colors[], int num_colors) {
   for (int sprite_index = 0; sprite_index < NUM_TWINKLERS; sprite_index++) {
     address = (random(0, STRING_LENGTH / 2) * 2) + 1;  
     start_step = random(0, (sprite_steps * 2) - 1);
+    Serial.println("creating index " + String(sprite_index) + " with address " + String(address));  
 
     color_step = (sprite_index % num_colors);
     sprites[sprite_index] = new CycleSprite(address, sprite_steps, colors[color_step], start_step);
@@ -97,14 +156,15 @@ void setup_sprites(uint8_t *colors[], int num_colors) {
  * Sprite loop function.
  */
 void loop_sprites() {
-//  Serial.println("loop_sprites");  
+//  Serial.println("loop_sprites");
   int address = 0;
   for (int sprite_index = 0; sprite_index < NUM_TWINKLERS; sprite_index++) {
     sprites[sprite_index]->cycle(&strip);
     if (sprites[sprite_index]->finished()) {
+      strip.setPixelColor(sprites[sprite_index]->address, 0, 0, 0);
       address = (random(0, STRING_LENGTH / 2) * 2) + 1;
       sprites[sprite_index]->setStep(0);
-      sprites[sprite_index]->setAddress(&strip, address);
+      sprites[sprite_index]->setAddress(address);
       Serial.println("recycling index " + String(sprite_index) + " to address " + String(address));  
     }
   }
