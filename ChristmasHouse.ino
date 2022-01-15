@@ -60,13 +60,14 @@ CycleString *cycleString = NULL;
 uint32_t test_colors_one[4] = {REDISH, WHITEISH, GREENISH, BLUEISH};
 uint32_t test_colors_two[2] = {REDISH, BLUEISH};
 
-ColorParade colorParade[2] = {ColorParade(test_colors_one, 4, 6, 100), ColorParade(test_colors_two, 2, 2, 100)};
+ColorParade colorParade[2] = {
+  ColorParade(test_colors_one, 4, 6),
+  ColorParade(test_colors_two, 2, 2)
+};
 //colorParade[0] = ColorParade(test_colors_one, 4, 6, 100);
-//
 //colorParade[1] = ColorParade(test_colors_two, 2, 6, 100);
 
 EffectBase *something = NULL;
-
 
 int super_counter = 0;
 int current_effect_index = 1;

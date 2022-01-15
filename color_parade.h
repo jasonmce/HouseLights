@@ -7,7 +7,7 @@
 class ColorParade : public EffectBase {
   protected:
     Adafruit_NeoPixel* _neoPixel;
-    int loop_delay, num_colors, width, cycle_length, string_length;
+    int num_colors, width, cycle_length, string_length;
     uint32_t *colors;
     int counter;
   
@@ -15,11 +15,10 @@ class ColorParade : public EffectBase {
     /**
      * Store values we will need when displaying this effect.
      */
-    ColorParade(uint32_t *color_list, int color_count, int segment_width, int loop_pause) {
+    ColorParade(uint32_t *color_list, int color_count, int segment_width) {
       colors = color_list;
       num_colors = color_count;
       width = segment_width;
-      loop_delay = loop_pause;
       cycle_length = width * num_colors;
       counter = 0;
     }
