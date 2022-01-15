@@ -52,4 +52,6 @@ class ColorParade : public EffectBase {
       }
       counter = (counter + 1) % cycle_length;
     }
+    void cleanup(Adafruit_NeoPixel* neoPixel) {};
+    
 };

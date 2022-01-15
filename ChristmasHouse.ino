@@ -57,9 +57,93 @@ uint8_t rose[] = {255, 150, 150}; // Can't say "pink"
 
 CycleString *cycleString = NULL;
 
-uint32_t test_colors[4] = {REDISH, WHITEISH, GREENISH, BLUEISH};
-ColorParade *colorParade = new ColorParade(test_colors, 4, 6, 100);
+uint32_t test_colors_one[4] = {REDISH, WHITEISH, GREENISH, BLUEISH};
+uint32_t test_colors_two[2] = {REDISH, BLUEISH};
+
+ColorParade colorParade[2] = {ColorParade(test_colors_one, 4, 6, 100), ColorParade(test_colors_two, 2, 2, 100)};
+//colorParade[0] = ColorParade(test_colors_one, 4, 6, 100);
+//
+//colorParade[1] = ColorParade(test_colors_two, 2, 6, 100);
+
 EffectBase *something = NULL;
+
+
+int super_counter = 0;
+int current_effect_index = 1;
+
+/**
+ * All pre-loop operations and setup.
+ */
+void setup() {
+  Serial.begin(115200);
+  
+  strip.begin();
+  delay(500);
+
+  something = &colorParade[current_effect_index];
+  something->setup(&strip);
+}
+
+/**
+ * Working code loop.
+ */
+void loop() {
+  delay(100);
+
+  Serial.println("loop counter is " + String(super_counter) + " and current_effect_index is " + String(current_effect_index));
+  // Switch to next effect.
+  if (super_counter++ >= 25) {
+    Serial.println("JUMP counter is " + String(super_counter) + " and current_effect_index is " + String(current_effect_index));
+
+    something->cleanup(&strip);
+    current_effect_index = (current_effect_index + 1) % 2;
+    something = &colorParade[current_effect_index];
+    something->setup(&strip);
+    super_counter = 0;
+  }
+  something->loop(&strip);
+  
+  strip.show();
+}
+
+/**
+ * Set up sprites for looping, alternating colors from an array.
+ */
+void setup_sprites(uint8_t *colors[], int num_colors) {
+  int address, start_step, color_step;
+  int sprite_steps = 25;
+
+  Serial.println("setup_sprites");
+ 
+  for (int sprite_index = 0; sprite_index < NUM_TWINKLERS; sprite_index++) {
+    address = (random(0, STRING_LENGTH / 2) * 2) + 1;  
+    start_step = random(0, (sprite_steps * 2) - 1);
+    Serial.println("creating index " + String(sprite_index) + " with address " + String(address));  
+
+    color_step = (sprite_index % num_colors);
+    sprites[sprite_index] = new CycleSprite(address, sprite_steps, colors[color_step], start_step);
+  }     
+}
+
+/**
+ * Sprite loop function.
+ */
+void loop_sprites() {
+//  Serial.println("loop_sprites");
+  int address = 0;
+  for (int sprite_index = 0; sprite_index < NUM_TWINKLERS; sprite_index++) {
+    sprites[sprite_index]->cycle(&strip);
+    if (sprites[sprite_index]->finished()) {
+      strip.setPixelColor(sprites[sprite_index]->address, 0, 0, 0);
+      address = (random(0, STRING_LENGTH / 2) * 2) + 1;
+      sprites[sprite_index]->setStep(0);
+      sprites[sprite_index]->setAddress(address);
+      Serial.println("recycling index " + String(sprite_index) + " to address " + String(address));  
+    }
+  }
+}
+
+
 
 // untested
 void setup_spaced_rainbow_with_twinkles_using_sprites() {
@@ -102,70 +186,4 @@ void setup_color_parade() {
 }
 void loop_color_parade() {
   something->loop(&strip);
-}
-
-/**
- * All pre-loop operations and setup.
- */
-void setup() {
-  Serial.begin(115200);
-  
-  strip.begin();
-  delay(500);
-
-  something = colorParade;
-
-  setup_color_parade();
-  strip.show();
-}
-
-/**
- * Working code loop.
- */
-void loop() {
-  delay(500);
-
-  loop_color_parade();
-
-  // toggleTwinkles(&strip, 20);
-  //  loop_sprites();
-  //cycleString->loopSprites(&strip);
-  strip.show();
-}
-
-/**
- * Set up sprites for looping, alternating colors from an array.
- */
-void setup_sprites(uint8_t *colors[], int num_colors) {
-  int address, start_step, color_step;
-  int sprite_steps = 25;
-
-  Serial.println("setup_sprites");
- 
-  for (int sprite_index = 0; sprite_index < NUM_TWINKLERS; sprite_index++) {
-    address = (random(0, STRING_LENGTH / 2) * 2) + 1;  
-    start_step = random(0, (sprite_steps * 2) - 1);
-    Serial.println("creating index " + String(sprite_index) + " with address " + String(address));  
-
-    color_step = (sprite_index % num_colors);
-    sprites[sprite_index] = new CycleSprite(address, sprite_steps, colors[color_step], start_step);
-  }     
-}
-
-/**
- * Sprite loop function.
- */
-void loop_sprites() {
-//  Serial.println("loop_sprites");
-  int address = 0;
-  for (int sprite_index = 0; sprite_index < NUM_TWINKLERS; sprite_index++) {
-    sprites[sprite_index]->cycle(&strip);
-    if (sprites[sprite_index]->finished()) {
-      strip.setPixelColor(sprites[sprite_index]->address, 0, 0, 0);
-      address = (random(0, STRING_LENGTH / 2) * 2) + 1;
-      sprites[sprite_index]->setStep(0);
-      sprites[sprite_index]->setAddress(address);
-      Serial.println("recycling index " + String(sprite_index) + " to address " + String(address));  
-    }
-  }
 }

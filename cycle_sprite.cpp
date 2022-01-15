@@ -14,6 +14,9 @@ void CycleSprite::setMainValues(int index, int num_steps, int start_step) {
   total_steps = steps * 2;  
 }
 
+/**
+ * Constructor using separate RGB values.
+ */
 CycleSprite::CycleSprite(int index, int num_steps, int red, int green, int blue, int start_step) {
   setMainValues(index, num_steps, start_step);
   red_target = red;
@@ -21,6 +24,9 @@ CycleSprite::CycleSprite(int index, int num_steps, int red, int green, int blue,
   blue_target = blue;
 }
 
+/**
+ * Constructor using a color element array.
+ */
 CycleSprite::CycleSprite(int index, int num_steps, uint8_t *color, int start_step) {
   setMainValues(index, num_steps, start_step);
 

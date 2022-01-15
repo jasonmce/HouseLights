@@ -19,4 +19,5 @@ class EffectBase {
 
     virtual void setup(Adafruit_NeoPixel* neoPixel);
     virtual void loop(Adafruit_NeoPixel* neoPixel);
+    virtual void cleanup(Adafruit_NeoPixel* neoPixel);
 };
