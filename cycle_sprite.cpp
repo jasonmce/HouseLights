@@ -27,12 +27,16 @@ CycleSprite::CycleSprite(int index, int num_steps, int red, int green, int blue,
 /**
  * Constructor using a color element array.
  */
-CycleSprite::CycleSprite(int index, int num_steps, uint8_t *color, int start_step) {
+CycleSprite::CycleSprite(int index, int num_steps, uint32_t color, int start_step) {
   setMainValues(index, num_steps, start_step);
 
-  red_target = color[0];
-  green_target = color[1];
-  blue_target = color[2];
+  red_target = (uint8_t)(color >> 16);
+  green_target = (uint8_t)(color >>  8);
+  blue_target = (uint8_t)color;
+
+//  red_target = color[0];
+//  green_target = color[1];
+//  blue_target = color[2];
 }
 
 

@@ -1,3 +1,8 @@
+#ifndef Bozo_h
+#define Bozo_h
+
+#include <Adafruit_NeoPixel.h>
+
 class EffectBase {
 
   protected:
@@ -21,3 +26,6 @@ class EffectBase {
     virtual void loop(Adafruit_NeoPixel* neoPixel);
     virtual void cleanup(Adafruit_NeoPixel* neoPixel);
 };
+
+
+#endif
