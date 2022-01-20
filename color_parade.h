@@ -6,7 +6,6 @@
  */
 class ColorParade : public EffectBase {
   protected:
-    Adafruit_NeoPixel* _neoPixel;
     int num_colors, width, cycle_length, string_length;
     uint32_t *colors;
     int counter;

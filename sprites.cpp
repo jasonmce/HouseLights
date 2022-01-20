@@ -23,7 +23,7 @@ void Sprites::setup(Adafruit_NeoPixel* strip) {
         start_step = random(sprite_steps * 2) - 1;
         Serial.println("creating index " + String(sprite_index) + " with address " + String(address));  
     
-        sprites[sprite_index] = new CycleSprite(address, sprite_steps, colors[sprite_index % num_colors], start_step);
+        sprites_list[sprite_index] = new CycleSprite(address, sprite_steps, colors[sprite_index % num_colors], start_step);
       }       
     }
     
@@ -31,12 +31,12 @@ void Sprites::loop(Adafruit_NeoPixel* strip) {
   //  Serial.println("loop_sprites");
     int temp_address = 0;
     for (int sprite_index = 0; sprite_index < NUM_TWINKLERS; sprite_index++) {
-      sprites[sprite_index]->cycle(strip);
-      if (sprites[sprite_index]->finished()) {
-        strip->setPixelColor(sprites[sprite_index]->address, 0, 0, 0);
+      sprites_list[sprite_index]->cycle(strip);
+      if (sprites_list[sprite_index]->finished()) {
+        strip->setPixelColor(sprites_list[sprite_index]->address, 0, 0, 0);
         temp_address = (random(STRING_LENGTH / 2) * 2) + 1;
-        sprites[sprite_index]->setStep(0);
-        sprites[sprite_index]->setAddress(temp_address);
+        sprites_list[sprite_index]->setStep(0);
+        sprites_list[sprite_index]->setAddress(temp_address);
         Serial.println("recycling index " + String(sprite_index) + " to address " + String(temp_address));  
       }
     }

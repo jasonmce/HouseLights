@@ -3,6 +3,8 @@
 
 #include <Adafruit_NeoPixel.h>
 
+class CycleSprite;
+
 /**
  * Controls operation of a relay.
  */

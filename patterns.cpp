@@ -29,7 +29,7 @@ void Patterns::simplePattern(Adafruit_NeoPixel *light_strip, uint32_t colors[], 
 void Patterns::WithSpacing(Adafruit_NeoPixel *light_strip, uint32_t colors[], int num_colors, int spacing) {
   int string_length = light_strip->numPixels();
 
-  // Turn off the light_strip->
+  // Turn off the light_strip.
   light_strip->fill(light_strip->Color(0, 0, 0), 0, 0);
 
   // Iterate through the rest and spread them out.
