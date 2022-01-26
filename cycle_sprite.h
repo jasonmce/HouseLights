@@ -39,14 +39,6 @@ class CycleSprite {
       address, current_step, total_steps);
       Serial.println(buffer);
     };
-    static char * color_array(uint32_t c) {
-      uint8_t 
-        r = (uint8_t)(c >> 16),
-        g = (uint8_t)(c >>  8),
-        b = (uint8_t)c;
-        char colors[] = {r,g,b};
-      return colors;
-    }
   protected:
     // These are from adafruit's neopixel library.
     uint32_t color(uint8_t r, uint8_t g, uint8_t b) {

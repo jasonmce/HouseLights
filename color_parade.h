@@ -31,6 +31,7 @@ class ColorParade : public EffectBase {
         int my_color = (index / width) % num_colors;
         neoPixel->setPixelColor(index, colors[my_color]);
       }
+      neoPixel->show();
     }
 
     /**
