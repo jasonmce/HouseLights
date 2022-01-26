@@ -51,6 +51,7 @@ void setup() {
   strip.fill(WHITE);
 
   Sprites* sprites = new Sprites();
+  sprites->setNumSprites(10);
   sprites->setPalette(ukraine_palette, 2);
 //  Patterns::WithSpacing(&strip, color_palette, sizeof(color_palette) / sizeof(uint32_t), 1);
 //  ColorParade* colorParade = new ColorParade(color_palette, 2, 16);
