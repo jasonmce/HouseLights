@@ -12,12 +12,14 @@ class Sprites : public EffectBase {
 
     int num_colors = 1;
     uint32_t *colors = NULL;
+    int string_length = 0;
 
 
   public:
     Sprites() {
       num_colors = 0;
     }
+    ~Sprites();
     Sprites(uint32_t *color_list, int color_count);
     void setNumSprites(int num_sprites_to_create);
     void setPalette(uint32_t *color_list, int color_count);

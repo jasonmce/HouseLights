@@ -17,7 +17,7 @@
 #include "color_parade.h"
 
 
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(STRING_LENGTH, 2, NEO_RGB + NEO_KHZ400);
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(200, 2, NEO_RGB + NEO_KHZ400);
 
 uint32_t BLACK = strip.Color(0, 0, 0);
 uint32_t WHITE = strip.Color(255, 255, 255);
@@ -33,6 +33,7 @@ uint32_t ROSE = strip.Color(255, 128, 128);
 
 EffectBase *current_effect = NULL;
 int super_counter = 0;
+int loop_counter = 0;
 int current_effect_index = 0;
 uint32_t color_palette[7] = {RED, BLUE, ORANGE, INDIGO, YELLOW, ROSE, GREEN};
 uint32_t ukraine_palette[2] = {BLUE, YELLOW};
@@ -48,10 +49,10 @@ void setup() {
   strip.setBrightness(127);
   strip.show();
 
-  strip.fill(WHITE);
+  strip.fill(BLACK);
 
   Sprites* sprites = new Sprites();
-  sprites->setNumSprites(10);
+  sprites->setNumSprites(50);
   sprites->setPalette(ukraine_palette, 2);
 //  Patterns::WithSpacing(&strip, color_palette, sizeof(color_palette) / sizeof(uint32_t), 1);
 //  ColorParade* colorParade = new ColorParade(color_palette, 2, 16);
@@ -59,6 +60,8 @@ void setup() {
   current_effect = sprites;
   current_effect->setup(&strip);
 
+  super_counter = 1000;
+  loop_counter = 0;
 }
 
 /**
@@ -66,7 +69,25 @@ void setup() {
  */
 void loop() {
   delay(70);
-  Serial.println("loop");
+//  Serial.println("loop");
   current_effect->loop(&strip);
   strip.show();
+
+  if (super_counter-- <= 0) {
+    super_counter = 1000;
+    loop_counter++;
+    Serial.println("reset " + String(loop_counter));
+
+    current_effect->cleanup(&strip);
+    delete current_effect;
+
+    strip.fill(BLACK);
+
+    Sprites* sprites = new Sprites();
+    sprites->setNumSprites(50);
+    sprites->setPalette(ukraine_palette, 2);   
+    current_effect = sprites;
+    current_effect->setup(&strip);
+
+  }
 }
