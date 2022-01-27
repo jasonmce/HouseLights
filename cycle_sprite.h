@@ -1,7 +1,7 @@
+#include <Adafruit_NeoPixel.h>
+
 #ifndef CycleSprite_h
 #define CycleSprite_h
-
-#include <Adafruit_NeoPixel.h>
 
 class CycleSprite;
 

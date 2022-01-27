@@ -1,5 +1,6 @@
-#include "effect_base.h"
 #include <Adafruit_NeoPixel.h>
+
+#include "effect_base.h"
 
 /**
  * Displays a repeating series of color blocks that appear to rotate along the lights.

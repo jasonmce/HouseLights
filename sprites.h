@@ -1,6 +1,5 @@
 #include <Adafruit_NeoPixel.h>
 
-#include "global.h"
 #include "effect_base.h"
 #include "cycle_sprite.h"
 

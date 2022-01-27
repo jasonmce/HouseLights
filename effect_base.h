@@ -1,7 +1,7 @@
+#include <Adafruit_NeoPixel.h>
+
 #ifndef EffectBase_h
 #define EffectBase_h
-
-#include <Adafruit_NeoPixel.h>
 
 class EffectBase {
 

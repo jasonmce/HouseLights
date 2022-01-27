@@ -1,6 +1,10 @@
 /**
  * HouseLights application
  * 
+ * Runs a set of patterns on a string of WS2811 lights.
+ * 
+ * Slowly evolving to where a rotation of effects can be specified.
+ * 
  * Signal pin: Mega = 2, NodeMCU = D4
  */
 
@@ -9,11 +13,9 @@
 #include <avr/power.h>
 #endif
 
-#include "global.h"
 #include "cycle_sprite.h"
 #include "sprites.h"
 #include "patterns.h"
-#include "twinkle.h"
 #include "color_parade.h"
 
 
