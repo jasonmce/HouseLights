@@ -28,11 +28,13 @@ class ColorParade : public EffectBase {
      */
     void setup(Adafruit_NeoPixel* neoPixel) {
       string_length = neoPixel->numPixels();
+
       for (int index = 0; index < string_length; index++) {
         int my_color = (index / width) % num_colors;
         neoPixel->setPixelColor(index, colors[my_color]);
       }
       neoPixel->show();
+      
     }
 
     /**
@@ -51,6 +53,7 @@ class ColorParade : public EffectBase {
         }
       }
       counter = (counter + 1) % cycle_length;
+      Serial.print("counter is " + String(counter));
     }
     void cleanup(Adafruit_NeoPixel* neoPixel) {};
     
