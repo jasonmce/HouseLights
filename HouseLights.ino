@@ -61,13 +61,16 @@ uint32_t irish_flag_palette[3] = {
   strip.Color(255, 136, 62),
 };
 
+// Start at zero so it first runs at boot.
+int duskCheckCountdown = 0;
+
 /**
  * All pre-loop operations and setup.
  */
 void setup() {
   Serial.begin(115200);
 
-//  ntp_setup();
+  ntp_setup();
   
   strip.begin();
   delay(500);
@@ -96,7 +99,21 @@ void setup() {
  */
 void loop() {
 //  ntp_loop();
-//  delay(10000);
+  if (duskCheckCountdown-- < 0) {
+    int sleepMinutes = minutesToSleepUntilDark();
+    if (0 == sleepMinutes) {
+      Serial.printf("It's dark, no sleeping yet");
+    }    
+    if (0 != sleepMinutes) {
+      Serial.printf("Sleep for %d minutes\n", sleepMinutes);
+      strip.fill(BLACK);
+      strip.show();
+      delay(60000);
+      return;
+    }
+    duskCheckCountdown = 300;
+  }
+  
   delay(100);
   Serial.println("loop");
   current_effect->loop(&strip);

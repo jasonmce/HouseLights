@@ -1,6 +1,7 @@
 /**
- * Does NTP and DST.
+ * Does NTP, DST, and sunrise/sunset.
  * @see https://github.com/neptune2/simpleDSTadjust/blob/master/examples/ntpTimedemo_DST/ntpTimedemo_DST.ino
+ * @see https://www.arduino.cc/reference/en/libraries/sunset/
  */
 
 #include <ESP8266WiFi.h>
@@ -41,32 +42,71 @@ void ntp_setup() {
     delay(500);
     Serial.print(".");
   }
+  updateNTP(); // Init the NTP time  
   sun.setPosition(LATITUDE, LONGITUDE, TIMEZONE);  
 }
 
-void ntp_loop() {
-  updateNTP(); // Init the NTP time
-
-  char buf[30];
+/**
+ * @return bool
+ *   If we are observing DST.
+ */
+bool isDST() {
   char *dstAbbrev;
+  dstAdjusted.time(&dstAbbrev);
+  return !strcmp(dstAbbrev, StartRule.abbrev);
+}
 
-  time_t t0 = ::time(nullptr);
-  struct tm *timeinfo0 = localtime (&t0);
+/**
+ * @return int
+ *   Number of minutes since midnight.
+ */
+int timeInMinutes() {
+  char *dstAbbrev;
+  time_t t = dstAdjusted.time(&dstAbbrev);
+  struct tm *timeinfo = localtime (&t);
+  return (timeinfo->tm_hour * 60) + timeinfo->tm_min;
+}
+
+int minutesToSleepUntilDark() {
+ 
+  sun.setCurrentDate(2022, 04, 22);
+  sun.setTZOffset(TIMEZONE + (isDST() ? 1 : 0));
+ 
+  int sunrise = sun.calcSunrise();
+  int sunset = sun.calcSunset();
+  int nowmins = timeInMinutes();
+
+//  Serial.printf("Now %d:%02d pm\n", (nowmins / 60), nowmins % 60);
+//  Serial.printf("Sunrise: %d:%02d am\n", sunrise / 60, sunrise % 60);
+//  Serial.printf("Sunset %d:%02d pm\n", (sunset / 60) - 12, sunset % 60);
+//  Serial.printf("isDST is %d\n", isDST() ? 1 : 0);
+
+  // Before sunrise, return 0.
+  if (nowmins < sunrise) {
+    return 0;
+  }
+  // After sunset, return 0;
+  if (nowmins > sunset) {
+    return 0;
+  }
+  return sunset - nowmins;
+}
+
+int minutesToSunset() {
+  char *dstAbbrev;
 
   time_t t = dstAdjusted.time(&dstAbbrev);
   struct tm *timeinfo = localtime (&t);
  
-  int hour = (timeinfo->tm_hour+11)%12+1;  // take care of noon and midnight
-  sprintf(buf, "%02d/%02d/%04d %02d:%02d:%02d%s %s\n",timeinfo->tm_mon+1, timeinfo->tm_mday, timeinfo->tm_year+1900, hour, timeinfo->tm_min, timeinfo->tm_sec, timeinfo->tm_hour>=12?"pm":"am", dstAbbrev);
-  Serial.print(buf);
-
   sun.setCurrentDate(2022, 04, 22);
-  
-  int dstOffsetMinutes = (1 - (timeinfo->tm_hour - timeinfo0->tm_hour)) * 60;
-  Serial.printf("dst Offset: %d\n", dstOffsetMinutes);
-  
-  double sunrise = sun.calcSunrise() + dstOffsetMinutes;
-  Serial.printf("Sunrise: %d:%02d am\n", (int)sunrise / 60, (int)sunrise % 60);
-  double sunset = sun.calcSunset() + dstOffsetMinutes;
-  Serial.printf("Sunset %d:%02d pm\n", ((int)sunset / 60) - 12, (int)sunset % 60);
+
+  int sunset = sun.calcSunset() + 60;
+  int nowmins = timeInMinutes();
+
+  // Before sunset is simple subtraction.
+  if (sunset > nowmins) {
+    return sunset - nowmins;
+  }
+  // Minutes to midnight + sunrise minutes. 
+  return (1440 - nowmins) + sunset; 
 }
