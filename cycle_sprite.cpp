@@ -33,10 +33,6 @@ CycleSprite::CycleSprite(int index, int num_steps, uint32_t color, int start_ste
   red_target = (uint8_t)(color >> 16);
   green_target = (uint8_t)(color >>  8);
   blue_target = (uint8_t)color;
-
-//  red_target = color[0];
-//  green_target = color[1];
-//  blue_target = color[2];
 }
 
 
