@@ -1,21 +1,21 @@
 #include <Adafruit_NeoPixel.h>
 #include "effect_base.h"
 
-    char morseF[] = {1,1,3,1, NULL};
-    char morseC[] = {3,1,3,1, NULL};
-    char morseK[] = {1,3,1, NULL};
-    char morseT[] = {3, NULL};
-    char morseP[] = {1,3,3,1, NULL};
-    char morseR[] = {3,1,3, NULL};
-    char morseU[] = {1,1,3, NULL};
-    char morseS[] = {1,1,1, NULL};
-    char morseI[] = {1,1, NULL};
-    char morseA[] = {1,3, NULL};
-    char morseN[] = {3,1, NULL};
-    char morseM[] = {3,3, NULL};
+char morseF[] = {1,1,3,1, NULL};
+char morseC[] = {3,1,3,1, NULL};
+char morseK[] = {1,3,1, NULL};
+char morseT[] = {3, NULL};
+char morseP[] = {1,3,3,1, NULL};
+char morseR[] = {3,1,3, NULL};
+char morseU[] = {1,1,3, NULL};
+char morseS[] = {1,1,1, NULL};
+char morseI[] = {1,1, NULL};
+char morseA[] = {1,3, NULL};
+char morseN[] = {3,1, NULL};
+char morseM[] = {3,3, NULL};
 
-    char* text[] = {morseF, morseU, morseC, morseK, morseP, morseU, morseT, morseI, morseN};
-    int text_length = sizeof(text)/sizeof(text[0]);
+char* text[] = {morseF, morseU, morseC, morseK, morseP, morseU, morseT, morseI, morseN};
+int text_length = sizeof(text)/sizeof(text[0]);
 
 class MorseLight {
   protected:

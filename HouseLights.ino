@@ -40,6 +40,7 @@ EffectBase *current_effect = NULL;
 int super_counter = 0;
 int loop_counter = 0;
 int current_effect_index = 0;
+
 uint32_t color_palette[7] = {RED, BLUE, ORANGE, INDIGO, YELLOW, ROSE, GREEN};
 uint32_t ukraine_palette[2] = {BLUE, YELLOW};
 uint32_t ukraine_palette_with_spacing[4] = {BLUE, YELLOW, BLACK, BLACK};
@@ -77,10 +78,9 @@ void setup() {
   delay(500);
   Serial.println("setup()");
   strip.setBrightness(127);
-  strip.show();
-
   strip.fill(BLACK);
-
+  strip.show();
+  
 //  Sprites* sprites = new Sprites();
 //  sprites->setNumSprites(300);
 //  sprites->setPalette(ukraine_palette, 2);
@@ -94,12 +94,10 @@ void setup() {
 
 
 //  Patterns::WithSpacing(&strip, color_palette, sizeof(color_palette) / sizeof(uint32_t), 1);
-
 //  ColorParade* colorParade = new ColorParade(ukraine_palette_with_spacing, 4, 16);
 //  current_effect = colorParade;
 
   current_effect->setup(&strip);
-
 }
 
 /**

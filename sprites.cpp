@@ -43,7 +43,6 @@ void Sprites::loop(Adafruit_NeoPixel* strip) {
   
 void Sprites::cleanup(Adafruit_NeoPixel* strip) {
   for (int sprite_index = 0; sprite_index < num_sprites; sprite_index++) {
-//    Serial.println("  delete sprite " + String(sprite_index));  
     delete sprites_list[sprite_index];
   }
   delete[] sprites_list;
