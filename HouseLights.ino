@@ -122,8 +122,7 @@ void loop() {
     duskCheckCountdown = 300;
   }
   
-//  delay(100);
-  delay(500);
+  delay(current_effect->loopDelay());
   Serial.println("loop");
   current_effect->loop(&strip);
   strip.show();

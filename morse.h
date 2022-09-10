@@ -187,6 +187,18 @@ class Morse : public EffectBase {
       }
     }
     
-    void cleanup(Adafruit_NeoPixel* neoPixel) {};
+    void cleanup(Adafruit_NeoPixel* neoPixel) {
+      for (int sprite_index = 0; sprite_index < num_sprites; sprite_index++) {
+        delete lights_list[sprite_index];
+      }
+      delete[] lights_list;
+
+      string_length = 0;
+      num_colors = 0;
+      num_sprites = 0;
+    };
+
+    int loopDelay() { return 100; }
+
     
 };

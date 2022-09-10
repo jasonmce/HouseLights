@@ -36,4 +36,5 @@ class Sprites : public EffectBase {
     void setup(Adafruit_NeoPixel* strip);
     void loop(Adafruit_NeoPixel* strip);
     void cleanup(Adafruit_NeoPixel* strip);
+    int loopDelay() { return 100; }
 };

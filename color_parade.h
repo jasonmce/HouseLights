@@ -57,4 +57,6 @@ class ColorParade : public EffectBase {
     }
     void cleanup(Adafruit_NeoPixel* neoPixel) {};
     
+    int loopDelay() { return 100; }
+
 };
