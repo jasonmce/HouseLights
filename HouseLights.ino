@@ -17,6 +17,7 @@
 #include "sprites.h"
 #include "patterns.h"
 #include "color_parade.h"
+#include "morse.h"
 #include "ntp.h"
 
 
@@ -82,13 +83,20 @@ void setup() {
 
 //  Sprites* sprites = new Sprites();
 //  sprites->setNumSprites(300);
-//  sprites->setPalette(irish_flag_palette, 3);
+//  sprites->setPalette(ukraine_palette, 2);
 //  sprites->anyAddresses();
 //  current_effect = sprites;
 
+
+  Morse* morse = new Morse();
+  morse->setPalette(ukraine_palette, 2);
+  current_effect = morse;
+
+
 //  Patterns::WithSpacing(&strip, color_palette, sizeof(color_palette) / sizeof(uint32_t), 1);
-  ColorParade* colorParade = new ColorParade(ukraine_palette_with_spacing, 4, 16);
-  current_effect = colorParade;
+
+//  ColorParade* colorParade = new ColorParade(ukraine_palette_with_spacing, 4, 16);
+//  current_effect = colorParade;
 
   current_effect->setup(&strip);
 
@@ -114,7 +122,8 @@ void loop() {
     duskCheckCountdown = 300;
   }
   
-  delay(100);
+//  delay(100);
+  delay(500);
   Serial.println("loop");
   current_effect->loop(&strip);
   strip.show();
