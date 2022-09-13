@@ -1,6 +1,11 @@
 #include <Adafruit_NeoPixel.h>
 #include "effect_base.h"
 
+// Number of cycles to fade up and down.
+#define TRANSISTION_STEPS 5
+// Number of cycles per beat.  Dot = 1 beat, Dash = 3.
+#define BEAT_STEPS 3
+
 char morseF[] = {1,1,3,1, NULL};
 char morseC[] = {3,1,3,1, NULL};
 char morseK[] = {1,3,1, NULL};
@@ -22,9 +27,11 @@ class MorseLight {
     uint32_t color;    
     int letter_index;
     int letter_step;
+    int starting_countdown;
     int step_countdown;
+    int ending_countdown;
     int break_countdown;
-    
+   
   public:
     int address;
     MorseLight(int light_address, int letter_offset, uint32_t my_color) {
@@ -37,16 +44,6 @@ class MorseLight {
       address = new_address;
     }
 
-    // Pause 3 counts between letters.
-    void letterBreak() {
-      break_countdown = 3;
-    }
-    
-    // Pause 5 counts between words.
-    void wordBreak() {
-      break_countdown = 5;
-    }
-
     // Advance to this index in the text string.
     void setLetterIndex(int index) {
       setLetterIndexAndStep(index, 0);
@@ -56,33 +53,59 @@ class MorseLight {
     void setLetterIndexAndStep(int new_index, int new_step) {
       letter_index = new_index;
       letter_step = new_step;
-      step_countdown = text[letter_index][letter_step];
-      break_countdown = 0;
+      starting_countdown = TRANSISTION_STEPS;
+      step_countdown = text[letter_index][letter_step] * BEAT_STEPS;
+      ending_countdown = TRANSISTION_STEPS;
+      break_countdown = BEAT_STEPS * 1; // 1 beats between marks in a letter.
+      if (NULL == text[letter_index][letter_step +1]) {
+        break_countdown += BEAT_STEPS * 3; // 3 beats at the end of a letter.
+      }
     }
-    
+
+    uint32_t scaleColor(uint32_t color, int percent) {
+      uint8_t red = (uint8_t)(color >> 16);
+      uint8_t green = (uint8_t)(color >>  8);
+      uint8_t blue = (uint8_t)color;
+      return ((uint32_t)uint32_t(float(red * percent) / float(100)) << 16) | ((uint32_t)uint32_t(float(green * percent) / float(100)) << 8) | uint8_t(float(blue * percent) / float(100));
+    }
+
+    uint32_t lightColor() {
+      if (starting_countdown > 0) {
+        starting_countdown--;
+        return scaleColor(color, (100 * (TRANSISTION_STEPS - starting_countdown)) / TRANSISTION_STEPS);
+      }
+      if (step_countdown > 0) {
+        step_countdown--;
+        return color;
+      }
+      if (ending_countdown > 0) {
+        ending_countdown--;
+        return scaleColor(color, (100 * ending_countdown) / TRANSISTION_STEPS);
+      }
+      if (break_countdown > 0) {
+        break_countdown--;
+        return (uint32_t) 0;
+      }
+      return (uint32_t) 0;
+    }
+
+    bool keepGoing() {
+      return (starting_countdown > 0) || (step_countdown > 0) || (ending_countdown > 0) || (break_countdown > 0);
+    }
    
     void cycle(Adafruit_NeoPixel *strip) {
-      // Taking a break.
-      if (break_countdown > 0) {
-        strip->setPixelColor(address, 0, 0, 0);
-        break_countdown--;
+      strip->setPixelColor(address, lightColor());      
+
+      // If this step is still going, nothing to do.
+      if (keepGoing()) {
         return;
       }
 
-      // Lightup the pixel if we're still in our step_countdown, otherwise black.
-      strip->setPixelColor(address, step_countdown ? color : strip->Color(0,0,0));        
-      step_countdown--;
-      
-      // If this step is still going, nothing to do.
-      if (step_countdown >= 0) {
-        return;
-      }
-      
       // Move on to the next letter step.
       letter_step++;
       // If we're not at the end of the letter steps, set the countdown and continue.
       if (NULL != text[letter_index][letter_step]) {
-        step_countdown = text[letter_index][letter_step];
+        setLetterIndexAndStep(letter_index, letter_step);
         return;
       }
       
@@ -91,13 +114,11 @@ class MorseLight {
       // Move to next letter.
       letter_index++;
       // If we're out of letters, that's a sentence!
-      if (finished()) {
-        wordBreak();
+      if (letter_index < text_length) {
+        setLetterIndex(letter_index);
         return;
       }
-      // Increment to the next letter and set a letter break.
-      setLetterIndex(letter_index);
-      letterBreak();
+      // If we're out of letters, that's a sentence!
     }
     
     bool finished() { return (break_countdown <= 0) && letter_index >= text_length; }

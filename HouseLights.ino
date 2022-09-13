@@ -42,7 +42,8 @@ int loop_counter = 0;
 int current_effect_index = 0;
 
 uint32_t color_palette[7] = {RED, BLUE, ORANGE, INDIGO, YELLOW, ROSE, GREEN};
-uint32_t ukraine_palette[2] = {BLUE, YELLOW};
+//uint32_t ukraine_palette[2] = {BLUE, YELLOW};
+uint32_t ukraine_palette[2] = {BLUE, strip.Color(153, 153, 15)};
 uint32_t ukraine_palette_with_spacing[4] = {BLUE, YELLOW, BLACK, BLACK};
 uint32_t voilets_palette[] = {BLUE, INDIGO, VIOLET, ROSE, WHITE};
 uint32_t rouges_palette[] = {RED, INDIGO, VIOLET, ROSE, WHITE};
