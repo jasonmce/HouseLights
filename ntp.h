@@ -68,18 +68,28 @@ int timeInMinutes() {
 }
 
 int minutesToSleepUntilDark() {
- 
-  sun.setCurrentDate(2022, 04, 22);
+  updateNTP();
+  
+  char *dstAbbrev;
+  time_t t = dstAdjusted.time(&dstAbbrev);
+  struct tm *timeinfo = localtime (&t);
+
+  char buf[30];
+  int hour12 = (timeinfo->tm_hour+11)%12+1;  // take care of noon and midnight  
+  sprintf(buf, "minutesToSleepUntilDark says it is %02d/%02d/%04d %02d:%02d:%02d%s %s\n",timeinfo->tm_mon+1, timeinfo->tm_mday, timeinfo->tm_year+1900, hour12, timeinfo->tm_min, timeinfo->tm_sec, timeinfo->tm_hour>=12?"pm":"am", dstAbbrev);
+  Serial.print(buf);
+
+  sun.setCurrentDate(timeinfo->tm_year + 1900, timeinfo->tm_mon + 1, timeinfo->tm_mday);
   sun.setTZOffset(TIMEZONE + (isDST() ? 1 : 0));
  
   int sunrise = sun.calcSunrise();
   int sunset = sun.calcSunset();
   int nowmins = timeInMinutes();
 
-//  Serial.printf("Now %d:%02d pm\n", (nowmins / 60), nowmins % 60);
-//  Serial.printf("Sunrise: %d:%02d am\n", sunrise / 60, sunrise % 60);
-//  Serial.printf("Sunset %d:%02d pm\n", (sunset / 60) - 12, sunset % 60);
-//  Serial.printf("isDST is %d\n", isDST() ? 1 : 0);
+  Serial.printf("Now %d:%02d pm\n", (nowmins / 60), nowmins % 60);
+  Serial.printf("Sunrise: %d:%02d am\n", sunrise / 60, sunrise % 60);
+  Serial.printf("Sunset %d:%02d pm\n", (sunset / 60) - 12, sunset % 60);
+  Serial.printf("isDST is %d\n", isDST() ? 1 : 0);
 
   // Before sunrise, return 0.
   if (nowmins < sunrise) {
