@@ -62,17 +62,33 @@ class MorseLight {
       }
     }
 
-    uint32_t scaleColor(uint32_t color, int percent) {
+    /**
+     * Returns color scaled to a brightness of max 255.
+     * 
+     * @param uint32_t color
+     *   32bit color to scale.
+     * @param uint8_t brightness
+     *   How much to scale it : 0 = black, 255 = full color.
+     *   
+     * @return uint32_t
+     *   The scaled color.
+     */
+    uint32_t scaleColor(uint32_t color, uint8_t brightness) {
       uint8_t red = (uint8_t)(color >> 16);
       uint8_t green = (uint8_t)(color >>  8);
       uint8_t blue = (uint8_t)color;
-      return ((uint32_t)uint32_t(float(red * percent) / float(100)) << 16) | ((uint32_t)uint32_t(float(green * percent) / float(100)) << 8) | uint8_t(float(blue * percent) / float(100));
+
+      red = (red * brightness) >> 8;
+      green = (green * brightness) >> 8;
+      blue = (blue * brightness) >> 8;
+            
+      return ((uint32_t)red << 16) | ((uint32_t)green << 8) | blue;
     }
 
     uint32_t lightColor() {
       if (starting_countdown > 0) {
         starting_countdown--;
-        return scaleColor(color, (100 * (TRANSISTION_STEPS - starting_countdown)) / TRANSISTION_STEPS);
+        return scaleColor(color, (255 * (TRANSISTION_STEPS - starting_countdown)) / TRANSISTION_STEPS);
       }
       if (step_countdown > 0) {
         step_countdown--;
@@ -80,7 +96,7 @@ class MorseLight {
       }
       if (ending_countdown > 0) {
         ending_countdown--;
-        return scaleColor(color, (100 * ending_countdown) / TRANSISTION_STEPS);
+        return scaleColor(color, (255 * ending_countdown) / TRANSISTION_STEPS);
       }
       if (break_countdown > 0) {
         break_countdown--;
