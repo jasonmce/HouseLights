@@ -53,7 +53,6 @@ class ColorParade : public EffectBase {
         }
       }
       counter = (counter + 1) % cycle_length;
-      Serial.print("counter is " + String(counter));
     }
 
     void cleanup(Adafruit_NeoPixel* neoPixel) {};
